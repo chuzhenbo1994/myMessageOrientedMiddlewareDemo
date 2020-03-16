@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.*;
@@ -33,6 +30,7 @@ public class RedisT {
         final String key = "redis：template：one：string";
         ValueOperations ops = redisTemplate.opsForValue();
         ops.set(key, context);
+        Boolean aBoolean = redisTemplate.hasKey(key);
         Object o = ops.get(key);
         logger.info(o.toString());
     }
@@ -95,5 +93,24 @@ public class RedisT {
             System.out.println(pop.toString());
             pop = forSet.pop(key);
         }
+    }
+    @Test
+    public void five(){
+        List<User> list = new ArrayList<>();
+        list.add(new User(5, "555", "555DDD"));
+        list.add(new User(5, "555", "555DDD"));
+        list.add(new User(6, "666", "666DDD"));
+        list.add(new User(7, "777", "777DDD"));
+        list.add(new User(6, "777", "777DDD"));
+        final String key = "redis:text4：zset";
+        ZSetOperations forZSet = redisTemplate.opsForZSet();
+        list.forEach(a->{
+            forZSet.add(key,a,a.getId());
+        });
+        Long size = forZSet.size(key);
+        Set range = forZSet.range(key, 0L, size);
+        range.forEach(b->{
+            System.out.println(b.toString());
+        });
     }
 }
