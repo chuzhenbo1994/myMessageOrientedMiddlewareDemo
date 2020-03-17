@@ -1,6 +1,6 @@
 package com.example.server;
 
-import com.example.server.Redis.User;
+import com.example.server.Redis_缓存穿透.domain.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

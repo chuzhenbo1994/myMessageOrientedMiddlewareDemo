@@ -1,14 +1,14 @@
-package com.example.server.Redis;
+package com.example.server.Redis_缓存穿透.controller;
 
+import com.example.server.Redis_缓存穿透.server.CachePassService;
+import com.example.server.Redis_缓存穿透.repository.ItemRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.*;
-import javax.annotation.PostConstruct;
 
 @Controller
 @RequestMapping("/a")

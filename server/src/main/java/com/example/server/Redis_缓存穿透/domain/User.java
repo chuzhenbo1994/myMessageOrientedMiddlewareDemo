@@ -1,4 +1,4 @@
-package com.example.server.Redis;
+package com.example.server.Redis_缓存穿透.domain;
 
 import lombok.Data;
 import lombok.ToString;
