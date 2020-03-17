@@ -23,6 +23,5 @@ public class RedPacketUtil {
             bigDecimals.add(restAmount);
         }
         return bigDecimals;
-
     }
 }
