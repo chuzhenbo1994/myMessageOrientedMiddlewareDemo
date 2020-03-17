@@ -56,20 +56,31 @@ public class RedPacketServiceImpl implements IRedPacketService {
         Boolean click = click(redId);
         if (click) {
             // 如果是抢到了
-            Object o = redisTemplate.opsForList().rightPop(redId);
-            if (o != null) {
-                // 表示缓存金额有钱
-                String redTotalKey = redId + ":total";
-                Integer currentTotal = opsForValue.get(redTotalKey) != null ? (Integer) opsForValue.get(redTotalKey) : 0;
+            //改进加锁 够着缓存中的key
+            final String lockKey = redId + userId + "-lock";
+            //改进加锁  调用setIfAbsent()方法，其实就是间接的实现了分布式的锁
+            Boolean lock = opsForValue.setIfAbsent(lockKey, redId);
+            //改进加锁 设置一个过期时间
+            Boolean expire = redisTemplate.expire(lockKey, 24L, TimeUnit.HOURS);
 
-                opsForValue.set(redTotalKey, currentTotal - 1);
-                BigDecimal result = new BigDecimal(o.toString()).divide(new BigDecimal(100));
-                // 将抢到的情况记录到数据库中。
-                iRedService.recordRobRedPacket(userId, redId, new BigDecimal(o.toString()));
-                // 将抢到红包的用户信息存入缓存信息 用于表示该用户已经抢到红包了
-                opsForValue.set(redId + userId + ":rob", result, 24L, TimeUnit.HOURS);
-                logger.info("当前用户抢到红包了：userId={} key={} 金额={}", userId, redId, result);
-                return result;
+            //改进加锁 对锁进行判断
+            if (lock) {
+                Object o = redisTemplate.opsForList().rightPop(redId);
+                if (o != null) {
+                    // 表示缓存金额有钱
+                    String redTotalKey = redId + ":total";
+                    Integer currentTotal = opsForValue.get(redTotalKey) != null ? (Integer) opsForValue.get(redTotalKey) : 0;
+
+                    opsForValue.set(redTotalKey, currentTotal - 1);
+                    BigDecimal result = new BigDecimal(o.toString()).divide(new BigDecimal(100));
+                    // 将抢到的情况记录到数据库中。
+                    iRedService.recordRobRedPacket(userId, redId, new BigDecimal(o.toString()));
+                    // 将抢到红包的用户信息存入缓存信息 用于表示该用户已经抢到红包了
+                    opsForValue.set(redId + userId + ":rob", result, 24L, TimeUnit.HOURS);
+
+                    logger.info("当前用户抢到红包了：userId={} key={} 金额={}", userId, redId, result);
+                    return result;
+                }
             }
         }
         return null;

@@ -67,6 +67,5 @@ public class RedServiceImpl implements IRedService {
         redRobRecord.setAmount(amount);
         redRobRecord.setRobTime(new Date());
         RedRobRecord save = redRobRecordRepository.save(redRobRecord);
-        System.out.println(save.toString());
     }
 }
