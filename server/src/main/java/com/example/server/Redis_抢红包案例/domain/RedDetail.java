@@ -7,6 +7,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.Date;
 
 @Entity
 @Table(name = "red_detail")
@@ -14,7 +15,8 @@ import java.text.DecimalFormat;
 public class RedDetail implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
     @Column(name = "record_id")
     private Integer recordId;
@@ -23,7 +25,7 @@ public class RedDetail implements Serializable {
     @Column(name = "is_active")
     private Short isActive;
     @Column(name = "create_time")
-    private String creatTime;
+    private Date creatTime;
 
     public Integer getId() {
         return id;
@@ -57,11 +59,11 @@ public class RedDetail implements Serializable {
         this.isActive = isActive;
     }
 
-    public String getCreatTime() {
+    public Date getCreatTime() {
         return creatTime;
     }
 
-    public void setCreatTime(String creatTime) {
+    public void setCreatTime(Date creatTime) {
         this.creatTime = creatTime;
     }
 }

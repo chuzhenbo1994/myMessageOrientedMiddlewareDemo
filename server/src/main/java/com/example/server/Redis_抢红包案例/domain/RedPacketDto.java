@@ -5,8 +5,7 @@ import lombok.ToString;
 
 import javax.persistence.criteria.CriteriaBuilder;
 
-@Data
-@ToString
+
 public class RedPacketDto {
 
     private Integer userId;

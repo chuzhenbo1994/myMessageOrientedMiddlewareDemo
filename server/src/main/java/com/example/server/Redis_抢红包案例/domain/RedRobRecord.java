@@ -5,6 +5,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.NavigableMap;
 
 @Entity
@@ -13,7 +14,7 @@ import java.util.NavigableMap;
 public class RedRobRecord implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "user_id")
     private Integer userId;
@@ -25,7 +26,7 @@ public class RedRobRecord implements Serializable {
     private BigDecimal amount;
 
     @Column(name = "rob_time")
-    private String robTime;
+    private Date robTime;
     @Column(name = "is_active")
     private Short isActive;
 
@@ -61,11 +62,11 @@ public class RedRobRecord implements Serializable {
         this.amount = amount;
     }
 
-    public String getRobTime() {
+    public Date getRobTime() {
         return robTime;
     }
 
-    public void setRobTime(String robTime) {
+    public void setRobTime(Date robTime) {
         this.robTime = robTime;
     }
 

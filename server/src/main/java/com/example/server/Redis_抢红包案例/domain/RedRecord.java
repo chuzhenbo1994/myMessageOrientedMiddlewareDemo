@@ -1,10 +1,12 @@
 package com.example.server.Redis_抢红包案例.domain;
 
+import lombok.Data;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Entity
 @Table(name = "red_record")
@@ -12,7 +14,8 @@ import java.math.BigDecimal;
 public class RedRecord implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
     @Column(name = "user_id")
     private Integer userId;
@@ -30,7 +33,7 @@ public class RedRecord implements Serializable {
     private Short isActive;
 
     @Column(name = "create_time")
-    private String creatTime;
+    private Date creatTime;
 
     public Integer getId() {
         return id;
@@ -80,11 +83,11 @@ public class RedRecord implements Serializable {
         this.isActive = isActive;
     }
 
-    public String getCreatTime() {
+    public Date getCreatTime() {
         return creatTime;
     }
 
-    public void setCreatTime(String creatTime) {
+    public void setCreatTime(Date creatTime) {
         this.creatTime = creatTime;
     }
 }
