@@ -1,4 +1,4 @@
-package com.example.server.Redis_缓存穿透.commen;
+package com.example.server.commen;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
