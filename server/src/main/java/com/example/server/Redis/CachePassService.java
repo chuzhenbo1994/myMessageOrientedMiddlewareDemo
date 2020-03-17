@@ -26,13 +26,14 @@ public class CachePassService {
     public Item getItemInfo(String ItemCode) throws JsonProcessingException {
         final String key = keyPrefix + ItemCode;
         ValueOperations opsForValue = redisTemplate.opsForValue();
-        if (redisTemplate.hasKey(opsForValue)) {
+        if (redisTemplate.hasKey(key)) {
             Object o = opsForValue.get(key);
             if (o != null && Strings.isNotBlank(o.toString())) {
-                objectMapper.readValue(o.toString(), Item.class);
+                Item item = objectMapper.readValue(o.toString(), Item.class);
+                System.out.println(item.toString());
             }
         } else {
-            Item byCode = repository.findByCode(ItemCode);
+            Item byCode = repository.findItemByCode(ItemCode);
             if (byCode != null) {
                 opsForValue.set(key, objectMapper.writeValueAsString(byCode));
             } else {
