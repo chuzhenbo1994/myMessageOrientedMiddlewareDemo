@@ -1,4 +1,4 @@
-package com.example.server.RabbitMQ.publish;
+package com.example.server.RabbitMQ_A.publish;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -14,7 +14,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 
 @Component
 public class BasicPublisher {
@@ -34,6 +33,7 @@ public class BasicPublisher {
             try {
                 rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
                 rabbitTemplate.setExchange(environment.getProperty("mq.basic.info.exchange.name"));
+                rabbitTemplate.setRoutingKey(environment.getProperty("mq.basic.info.routing.key.name"));
                 Message build = MessageBuilder.withBody(message.getBytes("UTF-8")).build();
                 logger.info("发送的信息为{}", build);
                 rabbitTemplate.convertAndSend(build);

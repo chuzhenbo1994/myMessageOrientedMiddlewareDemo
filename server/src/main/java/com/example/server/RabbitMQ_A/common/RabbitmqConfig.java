@@ -1,4 +1,4 @@
-package com.example.server.RabbitMQ.common;
+package com.example.server.RabbitMQ_A.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -14,7 +14,8 @@ import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+
+import javax.management.Query;
 
 @Configuration
 public class RabbitmqConfig {
@@ -100,20 +101,38 @@ public class RabbitmqConfig {
     private Environment env;
 
     @Bean(name = "basicQueue")
-    public Queue basicQueue(){
-        return new Queue(env.getProperty("mq.basic.info.queue.name"),true);
+    public Queue basicQueue() {
+        return new Queue(env.getProperty("mq.basic.info.queue.name"), true);
     }
 
     @Bean
-    public DirectExchange basicExchange(){
-        return new DirectExchange(env.getProperty("mq.basic.info.exchange.name"),true,false);
+    public DirectExchange basicExchange() {
+        return new DirectExchange(env.getProperty("mq.basic.info.exchange.name"), true, false);
     }
+
     // 创建一个绑定
-    public Binding baseBinding(){
+    @Bean
+    public Binding baseBinding() {
         return BindingBuilder.bind(basicQueue()).to(basicExchange()).with(env.getProperty("mq.basic.info.routing.key.name"));
     }
+
     @Bean
-    public ObjectMapper objectMapper(){
+    public ObjectMapper objectMapper() {
         return new ObjectMapper();
+    }
+
+    @Bean(name = "objectQueue")
+    public Queue objectQueue() {
+        return new Queue(env.getProperty("mq.object.info.queue.name"), true);
+    }
+
+    @Bean
+    public DirectExchange objectExchange() {
+        return new DirectExchange(env.getProperty("mq.object.info.exchange.name"), true, false);
+    }
+
+    @Bean
+    public Binding objectBinding() {
+        return BindingBuilder.bind(objectQueue()).to(objectExchange()).with(env.getProperty("mq.object.info.routing.key.name"));
     }
 }
