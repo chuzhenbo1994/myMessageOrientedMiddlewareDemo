@@ -1,9 +1,9 @@
 package com.example.server.RabbitMQ.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -12,9 +12,11 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
-@ComponentScan
+@Configuration
 public class RabbitmqConfig {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     // 自动装配连接rabbitmq的连接工厂实例
@@ -29,21 +31,21 @@ public class RabbitmqConfig {
      *
      * @return
      */
-    @Bean(name = "singleContainer")
+    @Bean(name = "singleListenerContainer")
     public SimpleRabbitListenerContainerFactory containerFactory() {
         // 定义消息监听器所在的工厂
-        SimpleRabbitListenerContainerFactory listenerContainerFactory = new SimpleRabbitListenerContainerFactory();
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         //设置容器工厂做用到的实例
-        listenerContainerFactory.setConnectionFactory(connectionFactory);
+        factory.setConnectionFactory(connectionFactory);
         // 消息传输中的格式
-        listenerContainerFactory.setMessageConverter(new Jackson2JsonMessageConverter());
+        factory.setMessageConverter(new Jackson2JsonMessageConverter());
         //并发消费者的初始数量为1
-        listenerContainerFactory.setConcurrentConsumers(1);
+        factory.setConcurrentConsumers(1);
         //并发消费者实例的最大数量为1
-        listenerContainerFactory.setMaxConcurrentConsumers(1);
+        factory.setMaxConcurrentConsumers(1);
         //设置并发消费者实例中 每个实例拉取的消息数量 为1
-        listenerContainerFactory.setPrefetchCount(1);
-        return listenerContainerFactory;
+        factory.setPrefetchCount(1);
+        return factory;
     }
 
     /**
@@ -51,32 +53,34 @@ public class RabbitmqConfig {
      *
      * @return
      */
-    @Bean(name = "multiContainer")
+    @Bean(name = "multiListenerContainer")
     public SimpleRabbitListenerContainerFactory multiContainerFactory() {
         // 定义消息监听器所在的工厂
-        SimpleRabbitListenerContainerFactory listenerContainerFactory = new SimpleRabbitListenerContainerFactory();
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         //设置容器工厂所用的实例
-        factoryConfigurer.configure(listenerContainerFactory, connectionFactory);
+        factoryConfigurer.configure(factory, connectionFactory);
         // 消息传输中的格式
-        listenerContainerFactory.setMessageConverter(new Jackson2JsonMessageConverter());
+        factory.setMessageConverter(new Jackson2JsonMessageConverter());
 
         // 设置消息的确认消费模式 这里表示不需要确认消费
-        listenerContainerFactory.setAcknowledgeMode(AcknowledgeMode.NONE);
+        factory.setAcknowledgeMode(AcknowledgeMode.NONE);
 
         //并发消费者的初始数量为10
-        listenerContainerFactory.setConcurrentConsumers(10);
+        factory.setConcurrentConsumers(10);
         //并发消费者实例的最大数量为15
-        listenerContainerFactory.setMaxConcurrentConsumers(15);
+        factory.setMaxConcurrentConsumers(15);
         //设置并发消费者实例中 每个实例拉取的消息数量 为10
-        listenerContainerFactory.setPrefetchCount(10);
-        return listenerContainerFactory;
+        factory.setPrefetchCount(10);
+        return factory;
     }
 
     @Bean
     public RabbitTemplate rabbitTemplate() {
         connectionFactory.setPublisherConfirms(true);
         connectionFactory.setPublisherReturns(true);
+
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMandatory(true);
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
             @Override
             public void confirm(CorrelationData correlationData, boolean b, String s) {
@@ -90,5 +94,26 @@ public class RabbitmqConfig {
             }
         });
         return rabbitTemplate;
+    }
+
+    @Autowired
+    private Environment env;
+
+    @Bean(name = "basicQueue")
+    public Queue basicQueue(){
+        return new Queue(env.getProperty("mq.basic.info.queue.name"),true);
+    }
+
+    @Bean
+    public DirectExchange basicExchange(){
+        return new DirectExchange(env.getProperty("mq.basic.info.exchange.name"),true,false);
+    }
+    // 创建一个绑定
+    public Binding baseBinding(){
+        return BindingBuilder.bind(basicQueue()).to(basicExchange()).with(env.getProperty("mq.basic.info.routing.key.name"));
+    }
+    @Bean
+    public ObjectMapper objectMapper(){
+        return new ObjectMapper();
     }
 }
