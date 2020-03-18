@@ -1,8 +1,7 @@
-package com.example.server.RabbitMQ_B.publish;
+package com.example.server.Rabbit.RabbitMQ_B.publish;
 
-import com.example.server.RabbitMQ_B.domain.Person;
+import com.example.server.Rabbit.RabbitMQ_B.domain.Person;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.AmqpException;

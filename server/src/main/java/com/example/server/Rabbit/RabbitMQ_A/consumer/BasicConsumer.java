@@ -1,6 +1,5 @@
-package com.example.server.RabbitMQ_B.consumer;
+package com.example.server.Rabbit.RabbitMQ_A.consumer;
 
-import com.example.server.RabbitMQ_B.domain.Person;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,18 +10,19 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-public class BasicConsumer_obj {
+public class BasicConsumer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private ObjectMapper objectMapper;
 
-    @RabbitListener(queues = "${mq.object.info.queue.name}", containerFactory = "singleListenerContainer")
-    public void consumeMsg(@Payload Person person) {
+    @RabbitListener(queues = "${mq.basic.info.queue.name}", containerFactory = "singleListenerContainer")
+    public void consumeMsg(@Payload byte[] msg) {
         try {
-            logger.info("消费者监听到的消息是{}", person.toString());
+            String s = new String(msg, "UTF-8");
+            logger.info("消费者监听到的消息是{}", s);
         } catch (Exception e) {
-            logger.info("消费者监錯誤信息{}", e.getMessage());
+            logger.info("消费者监錯誤信息{}", e);
         }
     }
 

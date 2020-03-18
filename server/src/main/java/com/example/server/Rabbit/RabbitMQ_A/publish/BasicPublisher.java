@@ -1,4 +1,4 @@
-package com.example.server.RabbitMQ_A.publish;
+package com.example.server.Rabbit.RabbitMQ_A.publish;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

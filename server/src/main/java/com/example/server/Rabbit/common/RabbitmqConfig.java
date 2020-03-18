@@ -1,4 +1,4 @@
-package com.example.server.RabbitMQ_A.common;
+package com.example.server.Rabbit.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -14,8 +14,6 @@ import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainer
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-
-import javax.management.Query;
 
 @Configuration
 public class RabbitmqConfig {
@@ -134,5 +132,38 @@ public class RabbitmqConfig {
     @Bean
     public Binding objectBinding() {
         return BindingBuilder.bind(objectQueue()).to(objectExchange()).with(env.getProperty("mq.object.info.routing.key.name"));
+    }
+
+    //创建 消息模式 FanoutExchange
+    // 广播队列
+    // Bean one
+    @Bean(name = "fanoutQueueOne")
+    public Queue fanoutQueueOne() {
+        return new Queue(env.getProperty("mq.fanout.queue.one.name"), true);
+    }
+
+    // 广播队列
+    // Bean two
+    @Bean(name = "fanoutQueueTwo")
+    public Queue fanoutQueueTwo() {
+        return new Queue(env.getProperty("mq.fanout.queue.two.name"), true);
+    }
+
+    // 交换机
+    // Bean
+    @Bean
+    public FanoutExchange fanoutExchange() {
+        return new FanoutExchange(env.getProperty("mq.fanout.exchange.name"), true, false);
+    }
+    // 绑定  将广播交换机和队列绑定 1 对 2；
+    // Bean 1
+    @Bean
+    public Binding fanoutBindingOne(){
+        return  BindingBuilder.bind(fanoutQueueOne()).to(fanoutExchange());
+    }
+    // Bean 2
+    @Bean
+    public Binding fanoutBindingTwo(){
+        return  BindingBuilder.bind(fanoutQueueTwo()).to(fanoutExchange());
     }
 }
