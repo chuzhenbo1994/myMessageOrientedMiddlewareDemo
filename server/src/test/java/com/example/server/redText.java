@@ -1,6 +1,6 @@
 package com.example.server;
 
-import com.example.server.Redis_抢红包案例.utils.RedPacketUtil;
+import com.example.server.Redis.Redis_抢红包案例.utils.RedPacketUtil;
 import org.junit.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
