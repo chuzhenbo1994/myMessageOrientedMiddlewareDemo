@@ -28,6 +28,7 @@ public class KnowledgePublisher {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
     @Autowired
     private Environment environment;
 

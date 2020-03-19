@@ -24,6 +24,7 @@ public class BasicPublisher_obj {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
     @Autowired
     private Environment environment;
 
