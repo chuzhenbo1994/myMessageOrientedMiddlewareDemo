@@ -1,6 +1,7 @@
 package com.example.server.Rabbit.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.bytebuddy.description.NamedElement;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,10 +62,8 @@ public class RabbitmqConfig {
         factoryConfigurer.configure(factory, connectionFactory);
         // 消息传输中的格式
         factory.setMessageConverter(new Jackson2JsonMessageConverter());
-
         // 设置消息的确认消费模式 这里表示不需要确认消费
         factory.setAcknowledgeMode(AcknowledgeMode.NONE);
-
         //并发消费者的初始数量为10
         factory.setConcurrentConsumers(10);
         //并发消费者实例的最大数量为15
@@ -73,20 +72,47 @@ public class RabbitmqConfig {
         factory.setPrefetchCount(10);
         return factory;
     }
-
+    /**
+     * 单一的消费者
+     *
+     * @return
+     */
+    @Bean(name = "singleListenerContainerAuto")
+    public SimpleRabbitListenerContainerFactory listenerContainerFactory() {
+        // 定义消息监听器所在的工厂
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        //设置容器工厂做用到的实例
+        factory.setConnectionFactory(connectionFactory);
+        // 消息传输中的格式
+        factory.setMessageConverter(new Jackson2JsonMessageConverter());
+        //并发消费者的初始数量为1
+        factory.setConcurrentConsumers(1);
+        //并发消费者实例的最大数量为1
+        factory.setMaxConcurrentConsumers(1);
+        //设置并发消费者实例中 每个实例拉取的消息数量 为1
+        factory.setPrefetchCount(1);
+        // 确认消费模式多设置 的一项 ACK
+        // 设置确认消息模式为自动确认消费 AUTO
+        factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
+        return factory;
+    }
     @Bean
     public RabbitTemplate rabbitTemplate() {
+        //设置消息发送确认机制-生产确认
         connectionFactory.setPublisherConfirms(true);
+        //设置消息发送确认机制-发送成功返回反馈信息
         connectionFactory.setPublisherReturns(true);
 
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMandatory(true);
+        // 设置消息发送确认机制，即发送成功时打印日志
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
             @Override
             public void confirm(CorrelationData correlationData, boolean b, String s) {
                 logger.info("消息发送成功：CorrelationData({}),ack({}),cause({})", correlationData, b, s);
             }
         });
+        //设置消息发送确认机制，即发送完消息后打印反馈信息，如消息丢失等。
         rabbitTemplate.setReturnCallback(new RabbitTemplate.ReturnCallback() {
             @Override
             public void returnedMessage(Message message, int i, String s, String s1, String s2) {
@@ -235,5 +261,19 @@ public class RabbitmqConfig {
                 with("mq.topic.routing.key.two.name");
     }
 
+    // 自动确认的 队列
+    @Bean(name = "AUTOQueue")
+    public Queue AUTOQueueOne() {
+        return new Queue(env.getProperty("mq.auto.knowledge.queue.name"));
+    }
 
+    @Bean
+    public DirectExchange AUTOExchange() {
+        return new DirectExchange(env.getProperty("mq.auto.knowledge.exchange.name"), true, false);
+    }
+    @Bean
+    public Binding AUTOBindingTwo() {
+        return BindingBuilder.bind(AUTOQueueOne()).to(AUTOExchange()).
+                with("mq.auto.knowledge.routing.key.name");
+    }
 }

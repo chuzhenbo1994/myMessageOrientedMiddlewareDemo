@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
+import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,8 @@ public class BasicPublisher {
                 rabbitTemplate.setMessageConverter(new Jackson2JsonMessageConverter());
                 rabbitTemplate.setExchange(environment.getProperty("mq.basic.info.exchange.name"));
                 rabbitTemplate.setRoutingKey(environment.getProperty("mq.basic.info.routing.key.name"));
-                Message build = MessageBuilder.withBody(message.getBytes("UTF-8")).build();
+                Message build = MessageBuilder.withBody(message.getBytes("UTF-8")
+                ).setDeliveryMode(MessageDeliveryMode.PERSISTENT).build();
                 logger.info("发送的信息为{}", build);
                 rabbitTemplate.convertAndSend(build);
             } catch (Exception e) {

@@ -1,6 +1,6 @@
 package com.example.server.Rabbit.RabbitMQ_B.publish;
 
-import com.example.server.Rabbit.RabbitMQ_B.domain.Person;
+import com.example.server.Rabbit.domain.Person;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

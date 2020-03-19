@@ -33,7 +33,8 @@ public class TopicPublish {  private final Logger logger = LoggerFactory.getLogg
                 rabbitTemplate.setExchange(environment.getProperty("mq.topic.exchange.name"));
                 rabbitTemplate.setRoutingKey(routingKey);
                 Message build = MessageBuilder.withBody(message.getBytes("utf-8")).build();
-                rabbitTemplate.convertAndSend(build);
+                rabbitTemplate.send(build);
+            //    rabbitTemplate.convertAndSend(build);
                 logger.info("发送的信息为{}", build);
             } catch (Exception e) {
                 logger.info("发送失败，异常消息为 {}", e.getMessage());

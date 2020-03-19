@@ -1,4 +1,4 @@
-package com.example.server.Rabbit.RabbitMQ_B.domain;
+package com.example.server.Rabbit.domain;
 
 import lombok.Data;
 import lombok.ToString;

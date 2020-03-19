@@ -1,6 +1,6 @@
 package com.example.server.Rabbit.DirectExchange.contumer;
 
-import com.example.server.Rabbit.FanoutExchange.domain.EventInfo;
+import com.example.server.Rabbit.domain.EventInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

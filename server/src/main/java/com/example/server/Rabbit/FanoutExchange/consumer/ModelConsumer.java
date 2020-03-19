@@ -1,16 +1,13 @@
 package com.example.server.Rabbit.FanoutExchange.consumer;
 
-import com.example.server.Rabbit.FanoutExchange.domain.EventInfo;
+import com.example.server.Rabbit.domain.EventInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
 
 @Component
 public class ModelConsumer {
