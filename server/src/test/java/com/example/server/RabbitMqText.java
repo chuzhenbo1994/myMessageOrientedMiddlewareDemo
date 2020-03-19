@@ -1,10 +1,12 @@
 package com.example.server;
 
+import com.example.server.Rabbit.DirectExchange.publish.DirectModelPublisher;
 import com.example.server.Rabbit.FanoutExchange.domain.EventInfo;
 import com.example.server.Rabbit.FanoutExchange.publish.ModelPublisher;
 import com.example.server.Rabbit.RabbitMQ_A.publish.BasicPublisher;
 import com.example.server.Rabbit.RabbitMQ_B.domain.Person;
 import com.example.server.Rabbit.RabbitMQ_B.publish.BasicPublisher_obj;
+import com.example.server.Rabbit.TopicExchange.publish.TopicPublish;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,11 @@ public class RabbitMqText {
     private BasicPublisher_obj basicPublisherObj;
     @Autowired
     private ModelPublisher modelPublisher;
+    @Autowired
+    private DirectModelPublisher directModelPublisher;
+
+    @Autowired
+    private TopicPublish topicPublish;
     @Test
     public void text1(){
         String  message = "哈哈哈哈  这是一条主要的消息 。";
@@ -49,6 +56,25 @@ public class RabbitMqText {
     public void text3(){
         try {
             modelPublisher.sendMeg(new EventInfo(1,"基于fanoutExchange的model","哈哈哈","desc"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    public void text4(){
+        try {
+            directModelPublisher.sendMegDirectOne(new EventInfo(1,"基于fanoutExchange的model","哈哈哈","desc"));
+         //   directModelPublisher.sendMegDirectTwo(new EventInfo(2,"基于fanoutExchange的model","哈哈哈","desc"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    public void text5(){
+        try {
+          topicPublish.sentMessageTp("你好吗，我很好1111","local.middleware.mq.topic.routing.java.one");
+          //  topicPublish.sentMessageTp("你好吗，我很好2222","local.middleware.mq.topic.routing.php.python.one");
+          //  topicPublish.sentMessageTp("你好吗，我很好3333","local.middleware.mq.topic.routing.one");
         } catch (Exception e) {
             e.printStackTrace();
         }

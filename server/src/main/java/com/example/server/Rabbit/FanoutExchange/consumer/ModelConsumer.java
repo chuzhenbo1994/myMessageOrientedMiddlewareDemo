@@ -23,20 +23,20 @@ public class ModelConsumer {
     public void conFMsgOne(@Payload EventInfo eventInfo){
         try {
 
-            logger.info("消息模式 监听消费的信息是：{} ",eventInfo);
+            logger.info("消息模式:通道一 ：监听消费的信息是：{} ",eventInfo);
         } catch (Exception e) {
           //  e.printStackTrace();
-            logger.info("消息模式 监听消费的异常信息是：{} ",e.getMessage());
+            logger.info("消息模式:通道一 ： 监听消费的异常信息是：{} ",e.getMessage());
         }
     }
     @RabbitListener(queues = "${mq.fanout.queue.two.name}", containerFactory = "singleListenerContainer")
     public void conFMsgTwo(@Payload EventInfo eventInfo){
         try {
          //   EventInfo eventInfo = mapper.readValue(msg, EventInfo.class);
-            logger.info("消息模式 监听消费的信息是：{} ",eventInfo);
+            logger.info("消息模式:通道二 ： 监听消费的信息是：{} ",eventInfo);
         } catch (Exception e) {
             //  e.printStackTrace();
-            logger.info("消息模式 监听消费的异常信息是：{} ",e.getMessage());
+            logger.info("消息模式 :通道二 ：监听消费的异常信息是：{} ",e.getMessage());
         }
     }
 }

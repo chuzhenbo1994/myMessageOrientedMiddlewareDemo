@@ -1,6 +1,7 @@
 package com.example.server.Rabbit.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
@@ -155,15 +156,84 @@ public class RabbitmqConfig {
     public FanoutExchange fanoutExchange() {
         return new FanoutExchange(env.getProperty("mq.fanout.exchange.name"), true, false);
     }
+
     // 绑定  将广播交换机和队列绑定 1 对 2；
     // Bean 1
     @Bean
-    public Binding fanoutBindingOne(){
-        return  BindingBuilder.bind(fanoutQueueOne()).to(fanoutExchange());
+    public Binding fanoutBindingOne() {
+        return BindingBuilder.bind(fanoutQueueOne()).to(fanoutExchange());
     }
+
     // Bean 2
     @Bean
-    public Binding fanoutBindingTwo(){
-        return  BindingBuilder.bind(fanoutQueueTwo()).to(fanoutExchange());
+    public Binding fanoutBindingTwo() {
+        return BindingBuilder.bind(fanoutQueueTwo()).to(fanoutExchange());
     }
+
+    // 创建 消息模式  DirectExchange
+
+    // 直接传输队列交换机
+    @Bean
+    public DirectExchange directExchange() {
+        return new DirectExchange(env.getProperty("mq.direct.exchange.name"), true, false);
+    }
+
+    //创建队列1
+    @Bean("directQueueOne")
+    public Queue directQueueOne() {
+        return new Queue(env.getProperty("mq.direct.queue.one.name"), true);
+    }
+
+    //创建队列2
+    @Bean("directQueueTwo")
+    public Queue directQueueTwo() {
+        return new Queue(env.getProperty("mq.direct.queue.two.name"), true);
+    }
+
+    @Bean
+    public Binding directBindingOne() {
+        return BindingBuilder.bind(this.directQueueOne()).to(directExchange()).with(env.getProperty("mq.direct.routing.key.one.name"));
+    }
+
+    @Bean
+    public Binding directBindingTwo() {
+        return BindingBuilder.bind(this.directQueueTwo()).to(directExchange()).with(env.getProperty("mq.direct.routing.key.two.name"));
+    }
+
+    // 创建 消息模式  TopicExchange
+    //创建交换机
+
+    @Bean
+    public TopicExchange topicExchange() {
+        return new TopicExchange(env.getProperty("mq.topic.exchange.name"), true, false);
+    }
+
+    //创建 队列
+    @Bean
+    public Queue topicQueueOne() {
+        return new Queue(env.getProperty("mq.topic.queue.one.name"));
+    }
+
+    @Bean
+    public Queue topicQueueTwo() {
+        return new Queue(env.getProperty("mq.topic.queue.two.name"));
+    }
+
+    // 创建绑定
+    // 通配符为 *的路由
+    @Bean
+    public Binding topicBindingOne() {
+        return BindingBuilder.bind(topicQueueOne()).to(topicExchange()).
+                with("mq.topic.routing.key.one.name");
+
+    }
+
+    // 通配符为 #的路由
+    @Bean
+    public Binding topicBindingTwo() {
+        return BindingBuilder.bind(topicQueueTwo()).to(topicExchange()).
+                with("mq.topic.routing.key.two.name");
+    }
+
+
 }
