@@ -11,13 +11,15 @@ import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class RabbitmqConfig {
@@ -342,5 +344,70 @@ public class RabbitmqConfig {
     @Bean
     public Binding LoginBinding() {
         return BindingBuilder.bind(loginQueue()).to(loginExchange()).with(env.getProperty("mq.login.routing.key.name"));
+    }
+    /**
+     *  @名称 死信队列创建对应的@Bean
+     *
+     */
+    /**
+     * @return
+     * @Queue 创建一个死信队列 QUEUE
+     * @组成 死信交换机 死信路由 TTL 存活时间
+     */
+    @Bean
+    public Queue basicDeadQueue() {
+        Map map = new HashMap();
+        // 创建一个死信交换机
+        map.put("x-dead-letter-exchange", env.getProperty("mq.dead.exchange.name"));
+        // 创建一个死信路由
+        map.put("x-dead-letter-routing-key", env.getProperty("mq.dead.routing.key.name"));
+        // 设定 TTL
+        map.put("x-message-ttl", 10000);
+        return new Queue(env.getProperty("mq.dead.queue.name"), true, false, false, map);
+    }
+
+    /**
+     * @创建：基本交换机，是与基本路由和死信队列绑定到一起
+     * @消息：面向生产者，是首先获取生产者消息的
+     */
+    @Bean
+    public TopicExchange basicProducerExchange() {
+        return new TopicExchange(env.getProperty("mq.producer.basic.exchange.name"), true, false);
+    }
+
+    /**
+     * @创建：基本绑定
+     * @目的：将基本交换机和基本路由绑定到一起
+     */
+    @Bean
+    public Binding basicProducerBinding() {
+        return BindingBuilder.bind(basicQueue()).to(basicProducerExchange()).with(env.getProperty("mq.producer.basic.routing.key.name"));
+    }
+
+    /**
+     * @创建：真正的QUEUE,是面向消费者
+     * @连接：死信队列
+     * @消费者会对该队列监听
+     */
+
+    @Bean
+    public Queue realConsumerQueue() {
+        return new Queue(env.getProperty("mq.consumer.real.queue.name"), true);
+    }
+
+    /**
+     * 创建死信交换机
+     */
+    @Bean
+    public TopicExchange basicDeadExchange() {
+        return new TopicExchange(env.getProperty("mq.dead.queue.name"));
+    }
+
+    /**
+     * 创建死信路由以及绑定
+     */
+    @Bean
+    public Binding basicDeadBinding() {
+        return BindingBuilder.bind(realConsumerQueue()).to(basicDeadExchange()).with(env.getProperty("mq.dead.routing.key.name"));
     }
 }
