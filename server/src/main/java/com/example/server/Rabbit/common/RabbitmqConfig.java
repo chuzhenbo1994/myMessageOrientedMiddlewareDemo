@@ -2,8 +2,6 @@ package com.example.server.Rabbit.common;
 
 import com.example.server.Rabbit.ManualACK.KnowledgeManualConsumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.bytebuddy.description.NamedElement;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.*;
@@ -331,4 +329,18 @@ public class RabbitmqConfig {
         return container;
     }
 
+    @Bean(name = "loginQueue")
+    public Queue loginQueue() {
+        return new Queue(env.getProperty("mq.login.queue.name"), true);
+    }
+
+    @Bean
+    public TopicExchange loginExchange() {
+        return new TopicExchange(env.getProperty("mq.login.exchange.name"), true, false);
+    }
+
+    @Bean
+    public Binding LoginBinding() {
+        return BindingBuilder.bind(loginQueue()).to(loginExchange()).with(env.getProperty("mq.login.routing.key.name"));
+    }
 }
