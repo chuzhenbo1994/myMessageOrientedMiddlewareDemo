@@ -17,13 +17,12 @@ import org.springframework.stereotype.Component;
 public class KnowledgeConsumer {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    @Autowired
-    private ObjectMapper objectMapper;
+
+    //private ObjectMapper objectMapper =new ObjectMapper();
 
     @RabbitListener(queues = "${mq.auto.knowledge.queue.name}", containerFactory = "singleListenerContainerAuto")
-    public void consumeMsg(@Payload byte[] info) {
+    public void consumeMsg(@Payload KnowledgeInfo knowledgeInfo) {
         try {
-            KnowledgeInfo knowledgeInfo = objectMapper.readValue(info, KnowledgeInfo.class);
             logger.info("消费者监听到的消息是{}", knowledgeInfo.toString());
         } catch (Exception e) {
             logger.info("消费者监錯誤信息{}", e.getMessage());

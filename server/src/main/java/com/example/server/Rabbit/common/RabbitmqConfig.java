@@ -1,5 +1,6 @@
 package com.example.server.Rabbit.common;
 
+import com.example.server.Rabbit.ManualACK.KnowledgeManualConsumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bytebuddy.description.NamedElement;
 import org.junit.Test;
@@ -10,8 +11,11 @@ import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFacto
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -72,6 +76,7 @@ public class RabbitmqConfig {
         factory.setPrefetchCount(10);
         return factory;
     }
+
     /**
      * 单一的消费者
      *
@@ -96,6 +101,7 @@ public class RabbitmqConfig {
         factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
         return factory;
     }
+
     @Bean
     public RabbitTemplate rabbitTemplate() {
         //设置消息发送确认机制-生产确认
@@ -237,12 +243,12 @@ public class RabbitmqConfig {
     //创建 队列
     @Bean
     public Queue topicQueueOne() {
-        return new Queue(env.getProperty("mq.topic.queue.one.name"));
+        return new Queue(env.getProperty("mq.topic.queue.one.name"), true);
     }
 
     @Bean
     public Queue topicQueueTwo() {
-        return new Queue(env.getProperty("mq.topic.queue.two.name"));
+        return new Queue(env.getProperty("mq.topic.queue.two.name"), true);
     }
 
     // 创建绑定
@@ -262,18 +268,67 @@ public class RabbitmqConfig {
     }
 
     // 自动确认的 队列
-    @Bean(name = "AUTOQueue")
+    @Bean("autoQueue")
     public Queue AUTOQueueOne() {
-        return new Queue(env.getProperty("mq.auto.knowledge.queue.name"));
+        return new Queue(env.getProperty("mq.auto.knowledge.queue.name"), true);
     }
 
     @Bean
     public DirectExchange AUTOExchange() {
         return new DirectExchange(env.getProperty("mq.auto.knowledge.exchange.name"), true, false);
     }
+
     @Bean
     public Binding AUTOBindingTwo() {
         return BindingBuilder.bind(AUTOQueueOne()).to(AUTOExchange()).
                 with("mq.auto.knowledge.routing.key.name");
     }
+
+    // 手动确认的 消息模式
+    // 创建一个queue
+    @Bean("manualQueue")
+    public Queue manualQueue() {
+        return new Queue(env.getProperty("mq.manual.knowledge.queue.name"), true);
+    }
+
+    // 创建交换机
+    @Bean
+    public TopicExchange manualExchange() {
+        return new TopicExchange(env.getProperty("mq.manual.knowledge.exchange.name"), true, false);
+    }
+
+    // 创建绑定
+
+    @Bean
+    public Binding manualBinding() {
+        return BindingBuilder.bind(manualQueue()).to(manualExchange()).
+                with(env.getProperty("mq.manual.knowledge.routing.key.name"));
+    }
+
+    @Autowired
+    public KnowledgeManualConsumer knowledgeManualConsumer;
+
+    @Bean(name = "sampleContainerManual")
+    public SimpleMessageListenerContainer listenerContainer(@Qualifier("manualQueue") Queue manualQueue) {
+        //创建消息监听容器实例
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        //设置连接工厂
+        container.setConnectionFactory(connectionFactory);
+        // 消息传输中的格式-json格式
+        /** 2.25 设置格式的没有了*/
+        // 单一消费实例配置
+        container.setConcurrentConsumers(1);
+        //并发消费者实例的最大数量为1
+        container.setMaxConcurrentConsumers(1);
+        //设置并发消费者实例中 每个实例拉取的消息数量 为1
+        container.setPrefetchCount(1);
+        // 设置消息的确认模式  手动确认
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+        // 指定容器监听的队列
+        container.setQueues(manualQueue);
+        // 指定该容器的 消息监听器
+        container.setMessageListener(knowledgeManualConsumer);
+        return container;
+    }
+
 }
