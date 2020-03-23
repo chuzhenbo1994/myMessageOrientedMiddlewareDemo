@@ -1,7 +1,7 @@
 package com.example.server;
 
-import com.example.server.RabbitDeadLetteQueue.entity.DeadInfo;
-import com.example.server.RabbitDeadLetteQueue.publisher.DeadPublisher;
+import com.example.server.Rabbit.RabbitDeadLetteQueue.entity.DeadInfo;
+import com.example.server.Rabbit.RabbitDeadLetteQueue.publisher.DeadPublisher;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

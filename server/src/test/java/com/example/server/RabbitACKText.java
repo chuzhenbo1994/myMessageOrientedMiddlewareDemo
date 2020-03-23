@@ -1,8 +1,8 @@
 package com.example.server;
 
-import com.example.server.Rabbit.AutoACK.publish.KnowledgePublisher;
-import com.example.server.Rabbit.ManualACK.publish.KnowledgeManualPublisher;
-import com.example.server.Rabbit.domain.KnowledgeInfo;
+import com.example.server.Rabbit.RabbitMQ_threeExchangeAndIntroduction.AutoACK.publish.KnowledgePublisher;
+import com.example.server.Rabbit.RabbitMQ_threeExchangeAndIntroduction.ManualACK.publish.KnowledgeManualPublisher;
+import com.example.server.Rabbit.RabbitMQ_threeExchangeAndIntroduction.domain.KnowledgeInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

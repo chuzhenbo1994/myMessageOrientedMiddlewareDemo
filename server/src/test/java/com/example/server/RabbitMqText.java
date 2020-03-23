@@ -1,12 +1,12 @@
 package com.example.server;
 
-import com.example.server.Rabbit.DirectExchange.publish.DirectModelPublisher;
-import com.example.server.Rabbit.domain.EventInfo;
-import com.example.server.Rabbit.FanoutExchange.publish.ModelPublisher;
-import com.example.server.Rabbit.RabbitMQ_A.publish.BasicPublisher;
-import com.example.server.Rabbit.domain.Person;
-import com.example.server.Rabbit.RabbitMQ_B.publish.BasicPublisher_obj;
-import com.example.server.Rabbit.TopicExchange.publish.TopicPublish;
+import com.example.server.Rabbit.RabbitMQ_threeExchangeAndIntroduction.DirectExchange.publish.DirectModelPublisher;
+import com.example.server.Rabbit.RabbitMQ_threeExchangeAndIntroduction.domain.EventInfo;
+import com.example.server.Rabbit.RabbitMQ_threeExchangeAndIntroduction.FanoutExchange.publish.ModelPublisher;
+import com.example.server.Rabbit.RabbitMQ_threeExchangeAndIntroduction.RabbitMQ_A.publish.BasicPublisher;
+import com.example.server.Rabbit.RabbitMQ_threeExchangeAndIntroduction.domain.Person;
+import com.example.server.Rabbit.RabbitMQ_threeExchangeAndIntroduction.RabbitMQ_B.publish.BasicPublisher_obj;
+import com.example.server.Rabbit.RabbitMQ_threeExchangeAndIntroduction.TopicExchange.publish.TopicPublish;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
