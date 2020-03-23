@@ -3,10 +3,9 @@ package com.example.server.Rabbit.RabbitCase_overtimeOrder.service;
 import com.example.server.Rabbit.RabbitCase_overtimeOrder.domain.MqOrder;
 import com.example.server.Rabbit.RabbitCase_overtimeOrder.domain.UserOrder;
 import com.example.server.Rabbit.RabbitCase_overtimeOrder.domain.UserOrderDto;
-import com.example.server.Rabbit.RabbitCase_overtimeOrder.rabbitmq.DeadOrderPublisher;
+import com.example.server.Rabbit.RabbitCase_overtimeOrder.rabbitmq.publisher.DeadOrderPublisher;
 import com.example.server.Rabbit.RabbitCase_overtimeOrder.repository.MqOrderJpaRepository;
 import com.example.server.Rabbit.RabbitCase_overtimeOrder.repository.UserOrderRepository;
-import org.omg.CORBA.PRIVATE_MEMBER;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +29,9 @@ public class DeadOrderService {
     private DeadOrderPublisher deadOrderPublisher;
 
     public void pushUserOrder(UserOrderDto userOrderDto) {
+
         UserOrder userOrder = new UserOrder();
+
         BeanUtils.copyProperties(userOrderDto, userOrder);
         // 设置支付的状态
         userOrder.setStatus(1);
@@ -40,10 +41,10 @@ public class DeadOrderService {
         UserOrder save = userOrderRepository.save(userOrder);
 
         logger.info("成功下单，订单信息为{}", save.toString());
-
         // 用戶下单产生的下单记录Id压入死信队列，
-        Integer id = save.getId();
-        deadOrderPublisher.sendMsg(id);
+        Integer orderId = save.getId();
+
+        deadOrderPublisher.sendMsg(orderId);
 
     }
 

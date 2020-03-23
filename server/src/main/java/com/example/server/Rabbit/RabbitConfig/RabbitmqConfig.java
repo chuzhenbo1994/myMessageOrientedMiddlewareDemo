@@ -111,6 +111,7 @@ public class RabbitmqConfig {
         connectionFactory.setPublisherReturns(true);
 
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+
         rabbitTemplate.setMandatory(true);
         // 设置消息发送确认机制，即发送成功时打印日志
         rabbitTemplate.setConfirmCallback(new RabbitTemplate.ConfirmCallback() {
@@ -401,7 +402,7 @@ public class RabbitmqConfig {
      */
     @Bean
     public TopicExchange basicDeadExchange() {
-        return new TopicExchange(env.getProperty("mq.dead.queue.name"));
+        return new TopicExchange(env.getProperty("mq.dead.queue.name"), true, false);
     }
 
     /**
@@ -422,7 +423,7 @@ public class RabbitmqConfig {
         // 死信路由
         map.put("x-dead-letter-routing-key", env.getProperty("mq.order.dead.routing.key.name"));
         // TTL
-        map.put("x-message-ttl", 10000);
+        map.put("x-message-ttl", 20000);
 
         return new Queue(env.getProperty("mq.order.dead.queue.name"), true, false, false, map);
     }
@@ -441,7 +442,7 @@ public class RabbitmqConfig {
 
     @Bean
     public Queue realOrderConsumerQueue() {
-        return new Queue(env.getProperty("mq.consumer.order.real.queue.name"));
+        return new Queue(env.getProperty("mq.consumer.order.real.queue.name"), true);
     }
     //创建一个死信交换机
 

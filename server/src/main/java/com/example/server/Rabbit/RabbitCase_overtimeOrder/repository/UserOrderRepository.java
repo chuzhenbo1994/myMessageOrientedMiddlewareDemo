@@ -14,5 +14,8 @@ public interface UserOrderRepository extends JpaRepository<UserOrder,Long> {
     @Modifying
     @Transactional
     Integer updateByPrimaryKeySelective(@Param("userOrders")UserOrder userOrder);
+
+    @Transactional
+    UserOrder  queryUserOrderByIdAndStatus(Integer orderId,Integer status);
 }
 
