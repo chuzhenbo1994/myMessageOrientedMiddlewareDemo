@@ -1,5 +1,8 @@
 package com.example.server.distributedlock.Thedatabaselock.domain;
 
+import lombok.Data;
+import lombok.ToString;
+
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import java.math.BigDecimal;
@@ -7,6 +10,8 @@ import java.util.Date;
 
 @Entity
 @Table(name = "user_account_record")
+@ToString
+@Data
 public class UserAccountRecord {
     @Id
     @Column(name = "id")
@@ -16,7 +21,7 @@ public class UserAccountRecord {
     private Integer accountId;
     @Column(name = "money")
     private BigDecimal money;
-    @Column(name = "creat_time")
+    @Column(name = "create_time")
     private Date createTime;
 
     public Integer getId() {

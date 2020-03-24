@@ -15,9 +15,10 @@ public class UserAccount {
     private Integer userId;
     @Column(name = "amount")
     private BigDecimal amount;
-    @Column(name = "version")
+    @Column(name = "version", columnDefinition = "int default 1")
+    @Version()
     private Integer version;
-    @Column(name = "is_active")
+    @Column(name = "is_active",columnDefinition = "tinyint default 1 ")
     private byte isActive;
 
     public Integer getId() {
