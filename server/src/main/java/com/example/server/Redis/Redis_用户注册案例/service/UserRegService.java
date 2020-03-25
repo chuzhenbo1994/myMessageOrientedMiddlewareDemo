@@ -28,7 +28,7 @@ public class UserRegService {
     public void userRegNoLock(UserRegDto userRegDto) {
         UserReg user = regRepository.findUserRegByUserName(userRegDto.getUserName());
         try {
-            logger.info("不加分布式的锁，当前的用户名为{}", user.getUserName());
+            logger.info("不加分布式的锁，当前的用户名为{}", userRegDto.getUserName());
             if (user == null) {
                 UserReg userReg = new UserReg();
                 BeanUtils.copyProperties(userRegDto, userReg);
@@ -47,6 +47,7 @@ public class UserRegService {
         final String value = System.nanoTime() + "" + UUID.randomUUID();
         ValueOperations<String, String> opsForValue = redisTemplate.opsForValue();
 
+        logger.info("插入redis里面的key是{}，value是{}",key,value);
         Boolean ifAbsent = opsForValue.setIfAbsent(key, value);
         // 如果是true 则获取到了分布式的锁
         if (ifAbsent) {
@@ -60,7 +61,7 @@ public class UserRegService {
                     userReg.setCreateTime(new Date());
                     UserReg returnReg = regRepository.save(userReg);
                 } else {
-                    logger.info("用户名已经被注册{}", user.getUserName());
+                    logger.info("用户名已经被注册{}", userRegDto.getUserName());
                 }
             } catch (BeansException e) {
                 e.printStackTrace();

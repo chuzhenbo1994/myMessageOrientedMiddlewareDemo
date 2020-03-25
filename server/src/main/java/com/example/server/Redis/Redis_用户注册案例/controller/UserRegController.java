@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@RequestMapping()
+@RequestMapping("/log")
 @Controller
 public class UserRegController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -24,10 +24,10 @@ public class UserRegController {
     @Autowired
     private UserRegService userRegService;
 
-    @RequestMapping(value = prefix + "/submit", method = RequestMethod.POST)
+    @RequestMapping(value = prefix + "/submit", method = RequestMethod.GET)
     public BaseResponse reg(UserRegDto userRegDto){
         BaseResponse response = new BaseResponse(StatusCode.SUCCESS);
-        userRegService.userRegNoLock(userRegDto);
+      //  userRegService.userRegNoLock(userRegDto);
         userRegService.userRegWithLock(userRegDto);
         return response;
     }
