@@ -28,7 +28,13 @@ public class UserRegController {
     public BaseResponse reg(UserRegDto userRegDto){
         BaseResponse response = new BaseResponse(StatusCode.SUCCESS);
       //  userRegService.userRegNoLock(userRegDto);
-        userRegService.userRegWithLock(userRegDto);
+      //  userRegService.userRegWithLock(userRegDto);
+        try {
+            userRegService.userRegWithZKLock(userRegDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return response;
     }
 }
