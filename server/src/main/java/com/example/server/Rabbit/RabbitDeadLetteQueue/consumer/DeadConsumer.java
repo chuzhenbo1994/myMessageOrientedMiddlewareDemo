@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DeadConsumer {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+      private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private ObjectMapper objectMapper;

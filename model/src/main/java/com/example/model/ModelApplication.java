@@ -3,6 +3,8 @@ package com.example.model;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryNTimes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,6 +15,7 @@ import org.springframework.core.env.Environment;
 @SpringBootApplication
 @ComponentScan(basePackages = "com.example.model")
 public class ModelApplication {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     @Autowired
     private Environment environment;
 
@@ -30,6 +33,7 @@ public class ModelApplication {
                 namespace(environment.getProperty("zk.namespace")).retryPolicy(new RetryNTimes(
                 5, 1000)).build();
         curatorFramework.start();
+
         return curatorFramework;
     }
 }
